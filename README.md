@@ -29,7 +29,7 @@ cd rtl8812au/
 sudo make dkms_install
 ```
 
-\*_Note: The build may take several minutes to complete._
+\*_Note: The build may take a while to run (~1 hour for me).  Go grab some :coffee:_
 
 **Check to make sure the install was successful:**
 
