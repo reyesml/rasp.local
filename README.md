@@ -17,7 +17,9 @@ The original Raspberry Pi Model B does not have a wifi card installed.  I chose 
 
 **Install the build dependencies:**
 
-`sudo apt install dkms git build-essential libelf-dev`
+```bash
+sudo apt install dkms git build-essential libelf-dev
+```
 
 
 
@@ -33,6 +35,8 @@ sudo make dkms_install
 
 **Check to make sure the install was successful:**
 
-`sudo dkms status`
+```bash
+sudo dkms status
+```
 
 You should see an entry for `8812au` with an `installed` status.
