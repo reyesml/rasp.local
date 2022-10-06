@@ -7,12 +7,12 @@ My Raspberry Pi is very old and cannot run OctoPi.  As a compromise, I'm trying 
 
 After all, my Pi is old, not broken :wink:
 
-## Build the base image
+# Build the base image
 
 Install the Raspberry Pi Imager and flash an SD card with Raspberry Pi OS Lite (32bit).  It is recommended to use key-based authentication for SSH.
 
 
-## Installing TP-Link AC600 Nano driver on Raspbian (32bit)
+# Installing TP-Link AC600 Nano driver on Raspbian (32bit)
 The original Raspberry Pi Model B does not have a wifi card installed.  I chose the TP-Link AC600 because of its compact form factor and dual-band support. This section outlines how to install the device drivers for Archer T2U Nano.
 
 **Install the build dependencies:**
@@ -45,6 +45,47 @@ You should see an entry for `8812au` with an `installed` status.  If so, unplug 
 
 Use `raspi-config` to configure the wifi connection.  The pi should appear as a wifi client on the network about a minute after the config is saved.
 
-## Configuring the web cam
+# Configuring the Web Cam
 
-TODO
+I used the [Logitech HD Laptop Webcam C615](https://www.amazon.com/dp/B004YW7WCY) for the camera.  Plug it in, and verify that the device can be found:
+
+```bash
+lsusb
+```
+
+Make note of the camera properties (we'll use these later)
+
+```bash
+v4l2-ctl -V
+```
+
+## Install Motion
+
+```bash
+sudo apt-get install motion
+```
+
+Update the motion config:
+
+```bash
+sudo nano /etc/motion/motion.conf
+```
+
+Change `daemon` to `on` and `steam_localhost` to `off`, and save your changes.
+
+Next, activate the daemon
+
+```bash
+sudo nano /etc/default/motion
+```
+
+add `start_motion_daemon=yes` and save the file.
+
+## Starting the Motion steam
+
+```bash
+sudo service motion start
+sudo motion
+```
+
+**then proceed to fight networking issues with motion
