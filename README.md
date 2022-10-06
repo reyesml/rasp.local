@@ -39,4 +39,8 @@ sudo make dkms_install
 sudo dkms status
 ```
 
-You should see an entry for `8812au` with an `installed` status.
+You should see an entry for `8812au` with an `installed` status.  If so, unplug the wifi module and plug it back in.  The green lights on the module should light up.
+
+## Wifi Authentication
+
+Use `raspi-config` to configure the wifi connection.  The pi should appear as a wifi client on the network about a minute after the config is saved.
