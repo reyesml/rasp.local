@@ -44,3 +44,7 @@ You should see an entry for `8812au` with an `installed` status.  If so, unplug 
 ## Wifi Authentication
 
 Use `raspi-config` to configure the wifi connection.  The pi should appear as a wifi client on the network about a minute after the config is saved.
+
+## Configuring the web cam
+
+TODO
