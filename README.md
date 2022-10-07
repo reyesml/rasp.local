@@ -68,4 +68,4 @@ export LD_LIBRARY_PATH=.
 ./mjpg_streamer -o 'output_http.so -l 0.0.0.0 -p 8083' -i 'input_uvc.so -f 15 -r 640x480'
 ```
 
-This launches a webserver listening to port 8083.  Next, open a web browser and navigate to `http://<hostname/IP>:8083/?action=stream`.  You should see the camera streaming to the browser :thumbsup:
+This launches a webserver listening to port 8083.  Next, open a web browser and navigate to `http://<hostname_or_IP>:8083/?action=stream`.  You should see the camera streaming to the browser :thumbsup:
