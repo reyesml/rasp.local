@@ -69,3 +69,34 @@ export LD_LIBRARY_PATH=.
 ```
 
 This launches a webserver listening to port 8083.  Next, open a web browser and navigate to `http://<hostname_or_IP>:8083/?action=stream`.  You should see the camera streaming to the browser :thumbsup:
+
+## Tuning the webcam
+
+mjpg_streamer supports configuring the framerate and resolution via the `-f` and `-r` options, but sometimes this isn't enough.  To discover more camera options, run `v4l2-ctl -l` to list the available options:
+
+```plaintext
+                     brightness 0x00980900 (int)    : min=0 max=255 step=1 default=128 value=128
+                       contrast 0x00980901 (int)    : min=0 max=255 step=1 default=32 value=32
+                     saturation 0x00980902 (int)    : min=0 max=255 step=1 default=32 value=32
+ white_balance_temperature_auto 0x0098090c (bool)   : default=1 value=1
+                           gain 0x00980913 (int)    : min=0 max=255 step=1 default=64 value=65
+           power_line_frequency 0x00980918 (menu)   : min=0 max=2 default=2 value=2
+      white_balance_temperature 0x0098091a (int)    : min=2800 max=6500 step=1 default=4000 value=3320 flags=inactive
+                      sharpness 0x0098091b (int)    : min=0 max=255 step=1 default=22 value=22
+         backlight_compensation 0x0098091c (int)    : min=0 max=1 step=1 default=1 value=1
+                  exposure_auto 0x009a0901 (menu)   : min=0 max=3 default=3 value=3
+              exposure_absolute 0x009a0902 (int)    : min=3 max=2047 step=1 default=166 value=415 flags=inactive
+         exposure_auto_priority 0x009a0903 (bool)   : default=0 value=1
+                   pan_absolute 0x009a0908 (int)    : min=-36000 max=36000 step=3600 default=0 value=0
+                  tilt_absolute 0x009a0909 (int)    : min=-36000 max=36000 step=3600 default=0 value=0
+                 focus_absolute 0x009a090a (int)    : min=0 max=255 step=17 default=51 value=85 flags=inactive
+                     focus_auto 0x009a090c (bool)   : default=1 value=1
+                  zoom_absolute 0x009a090d (int)    : min=1 max=5 step=1 default=1 value=1
+```
+
+For example, to disable the auto focus and adjust it manually, run the following commands:
+
+```bash
+v4l2-ctl -c focus_auto=0
+v4l2-ctl -c focus_absolute=$((17 * 6))
+```
