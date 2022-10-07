@@ -45,7 +45,9 @@ You should see an entry for `8812au` with an `installed` status.  If so, unplug 
 
 Use `raspi-config` to configure the wifi connection.  The pi should appear as a wifi client on the network about a minute after the config is saved.
 
-# Configuring the Web Cam
+Disconnect the Pi's ethernet cable, then veryify that you can still connect to it via ssh.
+
+# Configuring the Webcam
 
 I used the [Logitech HD Laptop Webcam C615](https://www.amazon.com/dp/B004YW7WCY) for the camera.  Plug it in, and verify that the device can be found:
 
@@ -53,83 +55,15 @@ I used the [Logitech HD Laptop Webcam C615](https://www.amazon.com/dp/B004YW7WCY
 lsusb
 ```
 
-Make note of the camera properties (we'll use these later)
+## Set up the Stream
+
+Follow the setup instructions in [mjpg-steamer](https://github.com/jacksonliam/mjpg-streamer). mjpg-streamer is a lightweight streaming application specifically designed for machines with limited resources.  It is perfect for my 700Mhz raspberry pi, and typically consumes less than 15% of the available CPU.
+
+After the package has been built, cd into `mjpg-streamer/mjpg-streamer-experimental` and run:
 
 ```bash
-v4l2-ctl -V
+export LD_LIBRARY_PATH=.
+./mjpg_streamer -o 'output_http.so -l 0.0.0.0 -p 8083' -i 'input_uvc.so -f 15 -r 640x480'
 ```
 
-## Setup the web steam
-
-```bash
-sudo apt-get install nginx libnginx-mod-rtmp
-```
-
-Modify the `/etc/nginx/nginx.conf` file and add the following block:
-
-```
-rtmp {
-  server {
-    listen 8082;
-    chunk_size 4096;
-    allow publish 127.0.0.1;
-    deny publish all;
-    application live {
-        live on;
-        record off;
-    }
-  }
-}
-```
-
-Add a directory to hold our web page `/var/www/rasp.local/`, and add a simple index.html file.
-
-Add an entry under `/etc/nginx/sites-available/rasp.local` for our website, with the following content:
-
-```nginx
-server {
-  listen 80 default_server;
-  listen [::]:80 default_server;
-  root /var/www/rasp.local;
-  index index.html;
-  location / {
-    try_files $uri $uri/ =404;
-  }
-}
-```
-
-Add a symlink to this file within the `sites-enabled` directory,
-and unlink the default entry:
-
-```bash
-ln -s /etc/nginx/sites-available/rasp.local /etc/nginx/sites-enabled/rasp.local
-unlink /etc/nginx/sites-enabled/default
-```
-
-
-Launch the nginx service:
-
-```bash
-sudo systemctl start nginx.service
-```
-
-Confirm that nginx is listening on port 8082 and 80:
-
-```bash
-sudo netstat -plunt | grep -i listen
-```
-
-Steam the webcam to nginx:
-
-```bash
-ffmpeg -re -i /dev/video0 -c:v copy -f flv rtmp://127.0.0.1:8082/live/cam0.flv 
-```
-
-```bash
-ffmpeg -y -f v4l2 -video_size 640x480 -framerate 25 -i /dev/video0 -vcodec h264  -f flv rtmp://127.0.0.1:8082/live/cam0.flv 
-```
-
-```bash
-ffmpeg -f v4l2 -i /dev/video0 -preset ultrafast -tune zerolatency -vcodec libx264 -r 10 -b:v 512k -s 640x360 -f mpegts -flush_packets 0 udp://0.0.0.0:5000?pkt_size=1316
-```
-
+This launches a webserver listening to port 8083.  Next, open a web browser and navigate to `http://<hostname/IP>:8083/?action=stream`.  You should see the camera streaming to the browser :thumbsup:
