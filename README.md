@@ -100,3 +100,72 @@ For example, to disable the auto focus and adjust it manually, run the following
 v4l2-ctl -c focus_auto=0
 v4l2-ctl -c focus_absolute=$((17 * 6))
 ```
+
+## Creating a systemd service for the webstream
+
+I typically find it more convenient to manage services rather than launch/stop scripts manually.  There are some convient features of systemd, such as being able to automatically launch a service at boot, as well as restart services after an error occurs.
+
+We'll start by making a convient launcher script under `mjpg-streamer/mjpg-streamer-experimental/launch_webcam.sh`:
+
+```bash
+#!/bin/bash
+
+scriptDir=$(dirname -- "$(readlink -f -- "$BASH_SOURCE")")
+
+
+cd "$scriptDir"
+export LD_LIBRARY_PATH=.
+./mjpg_streamer -o 'output_http.so -l 0.0.0.0 -p 8083' -i 'input_uvc.so -f 15 -r 640x480'
+
+```
+
+make it executable:
+
+```bash
+chmod +x launch-webcam.sh
+```
+
+
+Next, we'll create a new file for our camera service: `/etc/systemd/system/camera-stream.service`
+
+```ini
+[Unit]
+Description=Webcam Steam using mjpg-streamer
+After=network.target
+StartLimitIntervalSec=0
+[Service]
+Type=simple
+Restart=always
+RestartSec=10
+User=pi
+ExecStart=/home/pi/mjpg-streamer/mjpg-streamer-experimental/launch_webcam.sh
+
+[Install]
+WantedBy=multi-user.target
+
+```
+
+Reload the systemctl deamon so that it picks upu the new service file:
+
+```bash
+systemctl daemon-reload
+```
+
+Next, launch the service by running:
+
+```bash
+systemctl start camera-stream
+```
+
+Verify that the camera is working by running
+
+```bash
+systemctl status camera-stream.service
+```
+
+If you want the camera service to automatically start on boot, run:
+
+```bash
+systemctl enable camera-stream.service
+```
+
