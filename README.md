@@ -57,7 +57,9 @@ lsusb
 
 ## Set up the Stream
 
-Follow the setup instructions in [mjpg-steamer](https://github.com/jacksonliam/mjpg-streamer). mjpg-streamer is a lightweight streaming application specifically designed for machines with limited resources.  It is perfect for my 700Mhz raspberry pi, and typically consumes less than 15% of the available CPU.
+ I used mjpg-streamer as my stream server.  mjpg-streamer is a lightweight streaming application specifically designed for machines with limited resources.  It is perfect for my 700Mhz raspberry pi, and typically consumes less than 15% of the available CPU when streaming at 15fps.
+
+ Follow the setup instructions in [mjpg-steamer](https://github.com/jacksonliam/mjpg-streamer).
 
 After the package has been built, cd into `mjpg-streamer/mjpg-streamer-experimental` and run:
 
