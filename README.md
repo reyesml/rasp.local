@@ -13,15 +13,17 @@ Install the Raspberry Pi Imager and flash an SD card with Raspberry Pi OS Lite (
 
 
 # Installing TP-Link AC600 Nano driver on Raspbian (32bit)
+
 The original Raspberry Pi Model B does not have a wifi card installed.  I chose the TP-Link AC600 because of its compact form factor and dual-band support. This section outlines how to install the device drivers for Archer T2U Nano.
+
+_Note: This section is largly based off of [this how-to guide](https://ostechnix.com/install-tp-link-ac600-archer-t2u-nano-wifi-usb-adapter-in-linux/)._
+
 
 Install the build dependencies
 
 ```bash
 sudo apt install dkms git build-essential libelf-dev
 ```
-
-
 
 Clone and build the driver
 
