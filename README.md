@@ -59,33 +59,77 @@ Make note of the camera properties (we'll use these later)
 v4l2-ctl -V
 ```
 
-## Install Motion
+## Setup the web steam
 
 ```bash
-sudo apt-get install motion
+sudo apt-get install nginx libnginx-mod-rtmp
 ```
 
-Update the motion config:
+Modify the `/etc/nginx/nginx.conf` file and add the following block:
+
+```
+rtmp {
+  server {
+    listen 8082;
+    chunk_size 4096;
+    allow publish 127.0.0.1;
+    deny publish all;
+    application live {
+        live on;
+        record off;
+    }
+  }
+}
+```
+
+Add a directory to hold our web page `/var/www/rasp.local/`, and add a simple index.html file.
+
+Add an entry under `/etc/nginx/sites-available/rasp.local` for our website, with the following content:
+
+```nginx
+server {
+  listen 80 default_server;
+  listen [::]:80 default_server;
+  root /var/www/rasp.local;
+  index index.html;
+  location / {
+    try_files $uri $uri/ =404;
+  }
+}
+```
+
+Add a symlink to this file within the `sites-enabled` directory,
+and unlink the default entry:
 
 ```bash
-sudo nano /etc/motion/motion.conf
+ln -s /etc/nginx/sites-available/rasp.local /etc/nginx/sites-enabled/rasp.local
+unlink /etc/nginx/sites-enabled/default
 ```
 
-Change `daemon` to `on` and `steam_localhost` to `off`, and save your changes.
 
-Next, activate the daemon
+Launch the nginx service:
 
 ```bash
-sudo nano /etc/default/motion
+sudo systemctl start nginx.service
 ```
 
-add `start_motion_daemon=yes` and save the file.
-
-## Starting the Motion steam
+Confirm that nginx is listening on port 8082 and 80:
 
 ```bash
-sudo service motion start
-sudo motion
+sudo netstat -plunt | grep -i listen
 ```
 
-**then proceed to fight networking issues with motion
+Steam the webcam to nginx:
+
+```bash
+ffmpeg -re -i /dev/video0 -c:v copy -f flv rtmp://127.0.0.1:8082/live/cam0.flv 
+```
+
+```bash
+ffmpeg -y -f v4l2 -video_size 640x480 -framerate 25 -i /dev/video0 -vcodec h264  -f flv rtmp://127.0.0.1:8082/live/cam0.flv 
+```
+
+```bash
+ffmpeg -f v4l2 -i /dev/video0 -preset ultrafast -tune zerolatency -vcodec libx264 -r 10 -b:v 512k -s 640x360 -f mpegts -flush_packets 0 udp://0.0.0.0:5000?pkt_size=1316
+```
+
