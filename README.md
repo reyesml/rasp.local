@@ -15,7 +15,7 @@ Install the Raspberry Pi Imager and flash an SD card with Raspberry Pi OS Lite (
 # Installing TP-Link AC600 Nano driver on Raspbian (32bit)
 The original Raspberry Pi Model B does not have a wifi card installed.  I chose the TP-Link AC600 because of its compact form factor and dual-band support. This section outlines how to install the device drivers for Archer T2U Nano.
 
-**Install the build dependencies:**
+Install the build dependencies
 
 ```bash
 sudo apt install dkms git build-essential libelf-dev
@@ -23,7 +23,7 @@ sudo apt install dkms git build-essential libelf-dev
 
 
 
-**Clone and build the driver:**
+Clone and build the driver
 
 ```bash
 git clone https://github.com/aircrack-ng/rtl8812au.git
@@ -33,7 +33,7 @@ sudo make dkms_install
 
 \*_Note: The build may take a while to run (~1 hour for me).  Go grab some :coffee:_
 
-**Check to make sure the install was successful:**
+Check to make sure the install was successful:
 
 ```bash
 sudo dkms status
@@ -41,7 +41,7 @@ sudo dkms status
 
 You should see an entry for `8812au` with an `installed` status.  If so, unplug the wifi module and plug it back in.  The green lights on the module should light up.
 
-## Wifi Authentication
+## Configure Wifi SSID/Key
 
 Use `raspi-config` to configure the wifi connection.  The pi should appear as a wifi client on the network about a minute after the config is saved.
 
@@ -169,3 +169,4 @@ If you want the camera service to automatically start on boot, run:
 systemctl enable camera-stream.service
 ```
 
+Once the pi finishes rebooting, visit `http://<HOSTNAME_OR_IP>:8083/?action=stream` and the camera should be streaming :thumbsup:
